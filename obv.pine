@@ -1,0 +1,58 @@
+//@version=5
+strategy(title="OBV anchored", shorttitle="obva")
+
+
+// Buy when it flips red to blue, sell when it flips blue to red.
+// or near zero and significant increas
+
+y = input.int(2024, 'Year')
+m = input.int(1, 'Month')
+d = input.int(1, 'Day')
+h = input.int(0, 'Hour')
+min = input.int(0, 'Minute')
+t = timestamp(y, m, d, h, min)
+
+t1 = timestamp(y, 1, 1, h, min)
+t2 = timestamp(y, 4, 1, h, min)
+t3 = timestamp(y, 7, 1, h, min)
+t4 = timestamp(y, 10, 1, h, min)
+
+
+
+
+plot(0, transp=0, color=#000000, linewidth=1)
+
+start = t == time
+
+eachpoint = volume
+
+if close < open
+    eachpoint := -volume
+
+
+
+sumVol = eachpoint
+sumVol := start ? sumVol : sumVol + sumVol[1]
+start := false
+
+if time == t1
+    sumVol := eachpoint
+    start := true
+
+if time == t2
+    sumVol := eachpoint
+    start := true
+    
+if time == t3
+    sumVol := eachpoint
+    start := true
+if time == t4
+    sumVol := eachpoint
+    start := true
+
+col = #0000AA
+if (sumVol < 0)
+    col := #FF0000
+    
+
+plot(sumVol, transp=0, color=col, linewidth=1)
