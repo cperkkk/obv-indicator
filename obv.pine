@@ -5,18 +5,17 @@ strategy(title="OBV anchored", shorttitle="obva")
 // Buy when it flips red to blue, sell when it flips blue to red.
 // or near zero and significant increas
 
-y = input.int(2024, 'Year')
+y = input.int(2023, 'Year')
 m = input.int(1, 'Month')
 d = input.int(1, 'Day')
 h = input.int(0, 'Hour')
 min = input.int(0, 'Minute')
 t = timestamp(y, m, d, h, min)
 
-t1 = timestamp(y, 1, 1, h, min)
-t2 = timestamp(y, 4, 1, h, min)
-t3 = timestamp(y, 7, 1, h, min)
-t4 = timestamp(y, 10, 1, h, min)
-
+// t1 = timestamp(y, 1, 1, h, min)
+// t2 = timestamp(y, 4, 1, h, min)
+// t3 = timestamp(y, 7, 1, h, min)
+// t4 = timestamp(y, 10, 1, h, min)
 
 
 
@@ -35,18 +34,19 @@ sumVol = eachpoint
 sumVol := start ? sumVol : sumVol + sumVol[1]
 start := false
 
-if time == t1
+if month == m and dayofmonth == 1 
     sumVol := eachpoint
     start := true
 
-if time == t2
+if month == m+3 and dayofmonth == 1 
     sumVol := eachpoint
     start := true
     
-if time == t3
+if month == m+6 and dayofmonth == 1 
     sumVol := eachpoint
     start := true
-if time == t4
+
+if month == m+9 and dayofmonth == 1 
     sumVol := eachpoint
     start := true
 
