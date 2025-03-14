@@ -1,10 +1,8 @@
 //@version=5
-strategy(title="OBV anchored", shorttitle="obva")
+strategy(title="OBV Anchored Smoothed", shorttitle="obva_smooth")
 
-
-// Buy when it flips red to blue, sell when it flips blue to red.
-// or near zero and significant increas
-
+// Use daily timeframe
+// Input for anchor date
 y = input.int(2023, 'Year')
 m = input.int(1, 'Month')
 d = input.int(1, 'Day')
@@ -12,47 +10,46 @@ h = input.int(0, 'Hour')
 min = input.int(0, 'Minute')
 t = timestamp(y, m, d, h, min)
 
-// t1 = timestamp(y, 1, 1, h, min)
-// t2 = timestamp(y, 4, 1, h, min)
-// t3 = timestamp(y, 7, 1, h, min)
-// t4 = timestamp(y, 10, 1, h, min)
+// Input for smoothing length
+smoothingLength = input.int(title="Smoothing Length", defval=10, minval=1)
 
-
-
-plot(0, transp=0, color=#000000, linewidth=1)
+plot(0, transp=0, color=#000000, linewidth=1, title="Zero Line")
 
 start = t == time
-
 eachpoint = volume
 
 if close < open
-    eachpoint := -volume
-
-
+    eachpoint := -(volume)
 
 sumVol = eachpoint
 sumVol := start ? sumVol : sumVol + sumVol[1]
 start := false
 
-if month == m and dayofmonth == 1 
+// Quarterly Anchoring (Optional - you can adjust/remove if needed)
+if month == m and dayofmonth == 22
     sumVol := eachpoint
     start := true
 
-if month == m+3 and dayofmonth == 1 
-    sumVol := eachpoint
-    start := true
-    
-if month == m+6 and dayofmonth == 1 
+if month == m+3 and dayofmonth == 22
     sumVol := eachpoint
     start := true
 
-if month == m+9 and dayofmonth == 1 
+if month == m+6 and dayofmonth == 22
     sumVol := eachpoint
     start := true
 
+if month == m+9 and dayofmonth == 22
+    sumVol := eachpoint
+    start := true
+
+// Apply SMA smoothing to OBV
+
+smoothedOBV = ta.sma(sumVol, 14)
 col = #0000AA
-if (sumVol < 0)
+if (smoothedOBV < 0) // Use smoothedOBV for signal
+    strategy.close_all()
     col := #FF0000
-    
+else
+    strategy.entry("buy", strategy.long)
 
-plot(sumVol, transp=0, color=col, linewidth=1)
+plot(smoothedOBV, transp=0, color=col, linewidth=1, title="Smoothed OBV")
